@@ -1,3 +1,34 @@
+const API_URL = "https://steel-bony-brook.glitch.me/";
+
+const getData = async () => {
+    const reponse = await fetch(`${API_URL}api/goods`);
+    const data = await reponse.json();
+    return data;
+}
+
+const createCard = (item) => {
+    const cocktail = document.createElement('article');
+    cocktail.classList.add('cocktail');
+
+    cocktail.innerHTML = `
+        <img class="cocktail__img" src="${API_URL}${item.image}" alt="Коктель ${item.title}">
+
+        <div class="cocktail__content">
+            <div class="cocktail__text">
+                <h3 class="cocktail__title">${item.title}</h3>
+
+                <p class="cocktail__price text-red">${item.price} ₽</p>
+
+                <p class="cocktail__size">${item.size}</p>
+            </div>                               
+
+            <button class="btn cocktail__btn" data-id="${item.id}">Добавить</button>
+        </div>
+    `;
+
+    return cocktail;
+}
+
 const modalController = ({ modal, btnOpen, time = 300}) => {
     const buttonElem = document.querySelector(btnOpen);
     const modalElem = document.querySelector(modal);
@@ -40,6 +71,18 @@ const init = async () => {
         modal: ".modal__order",
         btnOpen: ".header__btn-order",   
     });
+
+    const goodsListElem = document.querySelector(".goods__list");
+    const data = await getData();
+
+    const cartsCocktail = data.map((item) => {
+        const li = document.createElement('li');
+        li.classList.add("goods__item");
+        li.append(createCard(item));
+        return li;
+    });
+
+    goodsListElem.append(...cartsCocktail);
 }
 
  init();
