@@ -29,10 +29,32 @@ const createCard = (item) => {
     return cocktail;
 }
 
+const scrollService = {
+    scrollPosition: 0,
+    disabledScroll() {
+        this.scrollPosition = window.scrollY;
+        document.documentElement.style.scrollBehavior = "auto";
+        document.body.style.cssText = `
+            overflow: hidden;
+            postion: fixed;
+            top: -${this.scrollPosition}px;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+            padding-right: ${window.innerWidth - document.body.offsetWidth}px;
+        `;
+    },
+    enabledScroll() {
+        document.body.style.cssText = "";
+        window.scroll({ top: this.scrollPosition });
+        document.documentElement.style.scrollBehavior = "";
+    }
+};
+
 const modalController = ({ modal, btnOpen, time = 300}) => {
     const buttonElem = document.querySelector(btnOpen);
     const modalElem = document.querySelector(modal);
-    console.log(modalElem);
+
     modalElem.style.cssText = `
         display: flex;
         visibility: hidden;
@@ -46,9 +68,11 @@ const modalController = ({ modal, btnOpen, time = 300}) => {
 
         if (target === modalElem || code === 'Escape') {
             modalElem.style.opacity = 0;
-        setTimeout(() => {
-            modalElem.style.visibility = 'hidden';
-        }, time);
+            
+            setTimeout(() => {
+                modalElem.style.visibility = 'hidden';
+                scrollService.enabledScroll();
+            }, time);
 
         window.removeEventListener('keydown', closeModal);
         }
@@ -58,6 +82,7 @@ const modalController = ({ modal, btnOpen, time = 300}) => {
         modalElem.style.visibility = 'visible';
         modalElem.style.opacity = 1;
         window.addEventListener('keydown', closeModal);
+        scrollService.disabledScroll();
     };
 
     buttonElem.addEventListener('click', openModal);
@@ -68,8 +93,13 @@ const modalController = ({ modal, btnOpen, time = 300}) => {
 
 const init = async () => {
     modalController({
-        modal: ".modal__order",
+        modal: ".modal_order",
         btnOpen: ".header__btn-order",   
+    });
+
+    modalController({
+        modal: ".modal_make",
+        btnOpen: ".cocktail__btn_make",
     });
 
     const goodsListElem = document.querySelector(".goods__list");
