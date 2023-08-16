@@ -83,6 +83,11 @@ h1, h2, h3, p, fieldset {
   color: #FFF;
 }
 
+.btn:disabled {
+  background-color: #C1C1C1;
+  box-shadow: none;
+}
+
 .text-red {
   color: #F44;
 }
